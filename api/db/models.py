@@ -96,15 +96,9 @@ class DB:
         date = Validate.to_ISO(year, month, day)
         update_string = ""
         for k, v in kwargs.items():
-            update_partial = f"""{k.upper()} = {v} , """
-            update_string += update_partial
+            update_string += f"""{k.upper()} = {v} , """
 
-        sql = f"""UPDATE time_logs SET
-                  {update_string[:-3]}
-                WHERE
-                  DATE = {date};
-                """
-
+        sql = f"""UPDATE time_logs SET {update_string[:-3]} WHERE DATE = {date};"""
         self.con.execute(sql)
 
     def record_exists(self, year, month, day):

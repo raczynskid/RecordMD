@@ -51,7 +51,7 @@ class TestDatabaseValidation(unittest.TestCase):
 
     def test_day_validation_incorrect_str(self):
         self.assertRaises(AttributeError, models.Validate.day, "33")
-        
+
     def test_hour_validation_correct_int(self):
         expected = 23
         actual = models.Validate.hour(23)
@@ -83,11 +83,12 @@ class TestDatabaseValidation(unittest.TestCase):
 
     def test_minute_validation_incorrect_str(self):
         self.assertRaises(AttributeError, models.Validate.minute, "321")
-        
+
     def test_to_iso(self):
         expected = "20210112"
         actual = models.Validate.to_ISO(2021, 1, 12)
         self.assertEqual(expected, actual)
+
 
 class TestDatabase(unittest.TestCase):
     def setUp(self) -> None:
@@ -140,6 +141,7 @@ class TestDatabase(unittest.TestCase):
         expected = (3, '20210203', 7, 0, 16, 30)
         actual = [row for row in data][0]
         self.assertEqual(expected, actual)
+
 
 if __name__ == '__main__':
     unittest.main()
