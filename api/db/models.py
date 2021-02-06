@@ -85,7 +85,8 @@ class DB:
     def retrieve_record(self, year, month, day):
         date = Validate.to_ISO(year, month, day)
         sql = f"SELECT * FROM time_logs WHERE DATE = {date};"
-        return self.con.execute(sql)
+        data = self.con.execute(sql)
+        return [row for row in data][0]
 
     def delete_record(self, year, month, day):
         date = Validate.to_ISO(year, month, day)

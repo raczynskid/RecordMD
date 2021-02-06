@@ -122,9 +122,8 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(rowcount_expected, 2)
 
     def test_database_retrieve_record(self):
-        data = self.db.retrieve_record(2021, 2, 5)
+        actual = self.db.retrieve_record(2021, 2, 5)
         expected = (5, '20210205', 7, 0, 15, 30)
-        actual = [row for row in data][0]
         self.assertEqual(expected, actual)
 
     def test_database_record_exists(self):

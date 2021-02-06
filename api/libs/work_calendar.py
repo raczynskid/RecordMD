@@ -7,10 +7,44 @@ class Workmonth:
     def __init__(self, year, month):
         self.year = year
         self.month = month
-        self.workdays = [Workday(year, month, day)
-                         for day in
-                         calendar.Calendar().itermonthdays(year, month)
-                         if day != 0]
+        self.workdays = {}
+
+    def save_to_database(self, model):
+        # save all workday items into sqlite database according to the model
+        for wd in self.workdays:
+            if not model.record_exists(wd.date.year, wd.date.month, wd.date.day):
+                model.add_record(year=wd.date.year,
+                                 month=wd.date.month,
+                                 day=wd.date.day,
+                                 start_hour=wd.start_hour,
+                                 start_minute=wd.start_minute,
+                                 end_hour=wd.end_hour,
+                                 end_minute=wd.end_minute
+                                 )
+            else:
+                model.update_record(year=wd.date.year,
+                                    month=wd.date.month,
+                                    day=wd.date.day,
+                                    start_hour=wd.start_hour,
+                                    start_minute=wd.start_minute,
+                                    end_hour=wd.end_hour,
+                                    end_minute=wd.end_minute
+                                    )
+
+    def read_from_database(self, model):
+        # create empty workdays, check for existing entries in database
+        # update instance if record exists
+        empty_workdays = [Workday(self.year, self.month, day)
+                          for day in
+                          calendar.Calendar().itermonthdays(self.year, self.month)
+                          if day != 0]
+
+        for wd in empty_workdays:
+            if model.record_exists(wd.date.year, wd.date.month, wd.date.day):
+                ix, dt_str, sh, sm, eh, em = model.retrieve_record(wd.date.year, wd.date.month, wd.date.day)
+                wd.start_time = (sh, sm)
+                wd.end_time = (eh, em)
+            self.workdays[wd.date.year, wd.date.month, wd.date.day] = wd
 
     def __len__(self):
         # override len method
@@ -84,6 +118,30 @@ class Workday:
         if self.start_time and self.end_time:
             return self.end_time - self.start_time
         return timedelta()
+
+    @property
+    def start_hour(self):
+        if self._start_time is not None:
+            return self._start_time.hour
+        return None
+
+    @property
+    def start_minute(self):
+        if self._start_time is not None:
+            return self._start_time.minute
+        return None
+
+    @property
+    def end_hour(self):
+        if self._end_time is not None:
+            return self._end_time.hour
+        return None
+
+    @property
+    def end_minute(self):
+        if self._end_time is not None:
+            return self._end_time.minute
+        return None
 
     def __repr__(self):
         return f"Workday object for date {self._record_date.strftime('%d/%m/%Y')}\n" \
