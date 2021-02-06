@@ -62,3 +62,40 @@ class TestControls(unittest.TestCase):
         actual = self.control.retrieve(year=2021, month=2).month
         expected = Workmonth(2021, 2).month
         self.assertEqual(expected, actual)
+
+    def test_control_save_to_database(self):
+        # check if cached changes in workmonth object
+        # are saved to database via data model
+        self.control.create(2021, 2)
+        self.control.create(2021, 3)
+
+        obj_workmonth = self.control.months[2021, 3]
+        obj_workday = obj_workmonth.workdays[2021, 3, 15]
+        obj_workday.start_time = (7, 30)
+        obj_workday.end_time = (15, 30)
+
+        self.control.save()
+
+        actual = self.control.model.retrieve_record(2021, 3, 15)[1:]
+        expected = ('20210315', 7, 30, 15, 30)
+
+        self.assertEqual(expected, actual)
+
+    def test_control_discard_change_not_saved_to_database(self):
+        # check if cached changes are discarded
+        # if database model is not called to store data
+        self.control.create(2021, 2)
+        self.control.create(2021, 3)
+
+        obj_workmonth = self.control.months[2021, 3]
+        obj_workday = obj_workmonth.workdays[2021, 3, 15]
+
+        self.control.save()
+
+        obj_workday.start_time = (7, 30)
+        obj_workday.end_time = (15, 30)
+
+        actual = self.control.model.retrieve_record(2021, 3, 15)[1:]
+        expected = ('20210315', 7, 30, 15, 30)
+
+        self.assertNotEqual(expected, actual)

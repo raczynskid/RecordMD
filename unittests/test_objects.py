@@ -48,15 +48,19 @@ class TestWorkmonth(unittest.TestCase):
 
     def test_correct_number_of_days(self):
         wm = Workmonth(2021, 1)
+        wm.read_from_database()
+
         self.assertEqual(31, len(wm))
 
     def test_creates_workdays(self):
         wm = Workmonth(2021, 1)
-        self.assertIsInstance(wm.workdays[0], Workday)
+        wm.read_from_database()
+        self.assertIsInstance(wm.workdays[1], Workday)
 
     def test_indexing(self):
         wm = Workmonth(2021, 1)
-        self.assertEqual(Workday(2021, 1, 3).date, wm[3].date)
+        wm.read_from_database()
+        self.assertEqual(Workday(2021, 1, 3).date, wm.workdays[3].date)
 
 
 if __name__ == '__main__':

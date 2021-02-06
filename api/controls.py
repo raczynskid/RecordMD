@@ -16,7 +16,8 @@ class Control:
         return self.months[year, month]
 
     def save(self):
-        pass
+        for obj_month in self.months.values():
+            obj_month.save_to_database(self.model)
 
     def edit(self):
         pass

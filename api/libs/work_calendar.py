@@ -11,7 +11,7 @@ class Workmonth:
 
     def save_to_database(self, model):
         # save all workday items into sqlite database according to the model
-        for wd in self.workdays:
+        for wd in self.workdays.values():
             if not model.record_exists(wd.date.year, wd.date.month, wd.date.day):
                 model.add_record(year=wd.date.year,
                                  month=wd.date.month,
@@ -31,17 +31,21 @@ class Workmonth:
                                     end_minute=wd.end_minute
                                     )
 
-    def read_from_database(self, model):
+    def read_from_database(self, model=None):
         # create empty workdays, check for existing entries in database
         # update instance if record exists
-        empty_workdays = [Workday(self.year, self.month, day)
+        empty_workdays = {day: Workday(self.year, self.month, day)
                           for day in
                           calendar.Calendar().itermonthdays(self.year, self.month)
-                          if day != 0]
+                          if day != 0}
 
-        for wd in empty_workdays:
-            if model.record_exists(wd.date.year, wd.date.month, wd.date.day):
-                ix, dt_str, sh, sm, eh, em = model.retrieve_record(wd.date.year, wd.date.month, wd.date.day)
+        if model is None:
+            self.workdays = empty_workdays
+            return
+
+        for day, wd in empty_workdays.items():
+            if model.record_exists(wd.date.year, wd.date.month, day):
+                ix, dt_str, sh, sm, eh, em = model.retrieve_record(wd.date.year, wd.date.month, day)
                 wd.start_time = (sh, sm)
                 wd.end_time = (eh, em)
             self.workdays[wd.date.year, wd.date.month, wd.date.day] = wd

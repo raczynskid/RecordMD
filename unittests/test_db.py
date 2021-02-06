@@ -136,9 +136,8 @@ class TestDatabase(unittest.TestCase):
 
     def test_database_update_record(self):
         self.db.update_record(2021, 2, 3, end_hour=16, end_minute=30)
-        data = self.db.retrieve_record(2021, 2, 3)
         expected = (3, '20210203', 7, 0, 16, 30)
-        actual = [row for row in data][0]
+        actual = self.db.retrieve_record(2021, 2, 3)
         self.assertEqual(expected, actual)
 
 
