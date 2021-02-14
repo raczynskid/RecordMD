@@ -63,6 +63,13 @@ class TestControls(unittest.TestCase):
         expected = Workmonth(2021, 2).month
         self.assertEqual(expected, actual)
 
+    def test_control_can_retrieve_workday(self):
+        self.control.create(2021, 2)
+        self.control.create(2021, 3)
+        actual = self.control.retrieve(year=2021, month=2, day=5).start_time
+        expected = datetime(2021, 2, 5, 7, 0)
+        self.assertEqual(expected, actual)
+
     def test_control_save_to_database(self):
         # check if cached changes in workmonth object
         # are saved to database via data model
@@ -99,3 +106,21 @@ class TestControls(unittest.TestCase):
         expected = ('20210315', 7, 30, 15, 30)
 
         self.assertNotEqual(expected, actual)
+
+    def test_control_edit_raises_error_if_no_month(self):
+        # check if edit method raises key error
+        # when attempting to edit nonexistent workmonth instance
+        self.assertRaises(KeyError, self.control.edit, year=2005, month=12, day=1)
+
+    def test_control_edit_changes_month(self):
+        self.control.create(2021, 3)
+
+        # edit the record
+        self.control.edit(year=2021, month=3, day=15, start_time=(8, 30))
+
+        # create compare object
+        expected = datetime(2021, 3, 15, 8, 30)
+        actual = self.control.retrieve(year=2021, month=3, day=15).start_time
+
+        # assert
+        self.assertEqual(expected, actual)

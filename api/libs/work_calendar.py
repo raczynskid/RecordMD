@@ -57,7 +57,7 @@ class Workmonth:
 
     def __getitem__(self, index):
         # indexing days where index = day
-        return self.workdays[index - 1]
+        return self.workdays[self.year, self.month, index]
 
     def __iter__(self):
         # allow iteration through object
